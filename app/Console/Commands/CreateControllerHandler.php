@@ -45,6 +45,8 @@ class CreateControllerHandler extends Command
         $controllerPath = app_path("Http/Controllers/{$modelName}");
         $applicationPath = app_path("App/Application/{$modelName}");
 
+        $this->generateResources($modelName);
+
         Artisan::call('make:resource', ['name' => "{$modelName}/{$modelName}Resource"]);
         $this->info("{$modelName}Resource criado em app\Http\Resources/{$modelName}Resource");
         Artisan::call('make:resource', ['name' => "{$modelName}/{$modelName}Collection"]);
@@ -76,6 +78,9 @@ class CreateControllerHandler extends Command
         $this->generateFile($stubPath, $filePath, [
             '{{ modelName }}' => $modelName,
             '{{ type }}' => $type,
+            '{{ resourceNamespace }}' => "App\\Http\\Resources\\" . Str::lower($modelName),
+            '{{ resourceName }}' => "{$modelName}Resource",
+            '{{ collectionName }}' => "{$modelName}Collection",
         ]);
 
         $this->info("Controller {$type} criado com sucesso em {$controllerPath}!");
@@ -144,4 +149,31 @@ class CreateControllerHandler extends Command
 
         $this->info("File created: {$filePath}");
     }
+  
+    protected function generateResources(string $modelName)
+{
+    $resourcePath = app_path("Http/Resources/" . strtolower($modelName));
+
+   
+    $resourceStubPath = base_path("stubs/resources/resource.stub");
+    $resourceFilePath = "{$resourcePath}/{$modelName}Resource.php";
+
+    $this->generateFile($resourceStubPath, $resourceFilePath, [
+        '{{ modelName }}' => $modelName,
+        '{{ namespace }}' => "App\\Http\\Resources\\" . Str::lower($modelName),
+    ]);
+
+    $this->info("Resource {$modelName}Resource criado com sucesso em {$resourceFilePath}!");
+
+   
+    $collectionStubPath = base_path("stubs/resources/collection.stub");
+    $collectionFilePath = "{$resourcePath}/{$modelName}Collection.php";
+
+    $this->generateFile($collectionStubPath, $collectionFilePath, [
+        '{{ modelName }}' => $modelName,
+        '{{ namespace }}' => "App\\Http\\Resources\\" . Str::lower($modelName),
+    ]);
+
+    $this->info("Collection {$modelName}Collection criado com sucesso em {$collectionFilePath}!");
+}
 }

@@ -1,0 +1,18 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Http\Resources\Json\ResourceCollection;
+
+class {{ modelName }}Collection extends ResourceCollection
+{
+    public function toArray($request)
+    {
+        return [
+            'data' => $this->collection,
+            'meta' => [
+                'total' => $this->collection->count(),
+            ],
+        ];
+    }
+}

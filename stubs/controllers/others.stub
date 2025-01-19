@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Commands\{{ modelName }}\UpdateCommand;
 use App\Handlers\{{ modelName }}\UpdateHandler;
+use {{ resourceNamespace }}\{{ resourceName }};
+use {{ resourceNamespace }}\{{ collectionName }};
 use Illuminate\Http\Request;
 use Illuminate\Http\Request;
 
