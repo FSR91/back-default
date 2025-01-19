@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Infra\Eloquent\Filter;
+
+class {{ modelName }}Filter extends AbstractFilter
+{
+    protected $allowedFilters = [];
+
+    protected $keywordFields = [];
+
+    protected $columnMap = [];
+
+    public function setup()
+    {
+        parent::setup();    
+    }
+}

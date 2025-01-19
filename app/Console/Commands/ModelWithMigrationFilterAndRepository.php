@@ -41,9 +41,7 @@ class ModelWithMigrationFilterAndRepository extends Command
 
         $this->generateModel($modelName, $modelPath);
         $this->call('make:migration', ['name' => $migrationName]);
-
-        $filterName = "{$modelName}Filter";
-
+        $this->generateFilter($modelName);
         $this->generateInterfaceRepository($modelName);
         $this->generateRepository($modelName);
     }
@@ -87,7 +85,7 @@ class ModelWithMigrationFilterAndRepository extends Command
 
         // Caminho do stub
         $stubPath = base_path('stubs\repositoryInterface.stub');
-        $interfacePath = app_path("Contracts/{$modelName}RepositoryInterface.php");        
+        $interfacePath = app_path("Contracts/{$modelName}RepositoryInterface.php");
 
 
         if (!File::exists($stubPath)) {
@@ -145,5 +143,39 @@ class ModelWithMigrationFilterAndRepository extends Command
         File::put($repositoryPath, $content);
 
         $this->info("Repository do model {$modelName} criado com sucesso em {$repositoryPath}.");
+    }
+
+
+    protected function generateFilter(string $modelName)
+    {
+
+        // Caminho do stub
+        $stubPath = base_path('stubs\filter.stub');
+        $filterPath = app_path("Infra\Eloquent\Filter\\{$modelName}Filter.php");
+        $modelInstance = Str::camel($modelName);
+
+
+        if (!File::exists($stubPath)) {
+            $this->error("O stub do model não foi encontrado em {$stubPath}.");
+            return;
+        }
+
+        // Ler o conteúdo do stub        
+        $stubContent = File::get($stubPath);
+
+        // Substituir placeholders no stub
+        $content = str_replace(
+            ['{{ modelName }}'],
+            [$modelName],
+            $stubContent
+        );
+
+        // Criar diretório, se necessário
+        File::ensureDirectoryExists(dirname($filterPath));
+
+        // Salvar o arquivo do model
+        File::put($filterPath, $content);
+
+        $this->info("Filter do model {$modelName} criado com sucesso em {$filterPath}.");
     }
 }
