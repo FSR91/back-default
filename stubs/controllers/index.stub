@@ -14,9 +14,16 @@ class Index{{ modelName }}Controller extends Controller
         $this->handler = $handler;
     }
 
-    public function __invoke()
+    public function __invoke(Request $request)
     {
-        $command = new IndexCommand();
+        $request->validate([
+            'search' => 'string|nullable',
+            'page' => 'integer|nullable',
+            'per_page' => 'integer|nullable',
+            'sort' => 'string|nullable',
+        ]);
+
+        $command = new IndexCommand($request->all());
 
         return $this->handler->handle($command);
     }

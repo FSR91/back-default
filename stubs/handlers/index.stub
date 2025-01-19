@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Handlers\{{ modelName }};
+
+use App\Commands\{{ modelName }}\IndexCommand;
+use App\Contracts\{{ modelName }}RepositoryContract;
+class IndexHandler
+{
+    function __construct(private {{ modelName }}RepositoryContract $repository)
+    {}
+
+    public function __invoke(IndexCommand $command)
+    {
+        return $this->repository->index(
+            $command->filter, 
+            $command->sort, 
+            $command->page, 
+            $command->per_page
+        );
+    }
+}

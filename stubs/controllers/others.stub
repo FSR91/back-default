@@ -17,11 +17,7 @@ class Update{{ modelName }}Controller extends Controller
 
     public function __invoke(int $id, Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'status' => 'required',
-        ]);
+        $request->validate([]);
 
         $command = new UpdateCommand(
             $id,

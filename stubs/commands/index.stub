@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Commands\{{ modelName }};
+
+class IndexCommand
+{  
+
+    public ?int $page;
+    public ?int $per_page;
+    public ?string $sort;
+    public ?array $filter;
+    
+
+    public function __construct(array $data) {        
+        $this->page = data_get($data, 'page');
+        $this->per_page = data_get($data, 'per_page');
+        $this->sort = data_get($data, 'sort');
+        $this->filter = array_diff_key(
+            $data, 
+            array_flip(['page', 'per_page', 'sort'])
+        );
+    }
+}

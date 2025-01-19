@@ -3,9 +3,11 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use function Laravel\Prompts\text;
+use function Laravel\Prompts\multiselect;
 
 class CreateControllerHandler extends Command
 {
@@ -14,7 +16,7 @@ class CreateControllerHandler extends Command
      *
      * @var string
      */
-    protected $signature = 'app:controller-handler {modelName}';
+    protected $signature = 'app:controller {modelName?}';
 
     /**
      * The console command description.
@@ -28,29 +30,32 @@ class CreateControllerHandler extends Command
      */
     public function handle()
     {
-        $modelName = $this->argument('modelName');
+        $modelName = $this->argument('modelName') ?? text(
+            label: 'Nome do Model:',
+            required: true,
+        );
+
+        $verbs = multiselect(
+            label: 'Quais Verbos:',
+            options: ['Index', 'Create', 'Show', 'Update', 'Delete'],
+            required: true,
+        );
 
         $modelName = Str::studly($modelName); // Convert to PascalCase
         $controllerPath = app_path("Http/Controllers/{$modelName}");
-        $handlerPath = app_path("Handlers/{$modelName}");
-        $commandPath = app_path("Commands/{$modelName}");
+        $applicationPath = app_path("App/Application/{$modelName}");
+
+        Artisan::call('make:resource', ['name' => "{$applicationPath}/{$modelName}Resource"]);
+        Artisan::call('make:resource', ['name' => "{$applicationPath}/{$modelName}Collection"]);
 
         // Generate Controllers
-        $this->generateController('Index', $modelName, $controllerPath);
-        $this->generateController('Create', $modelName, $controllerPath);
-        $this->generateController('Show', $modelName, $controllerPath);
-        $this->generateController('Update', $modelName, $controllerPath);
+        foreach ($verbs as $verb) {
+            $this->generateHandler($verb, $modelName, $applicationPath);
+            $this->generateCommand($verb, $modelName, $commandPath);
+            $this->generateController($verb, $modelName, $controllerPath);
+        }
 
-        // Generate a shared Handler (used for all operations)
-        $this->generateSharedHandler($modelName, $handlerPath);
-
-        // Generate Commands (DTO structure)
-        $this->generateCommand('Index', $modelName, $commandPath);
-        $this->generateCommand('Create', $modelName, $commandPath);
-        $this->generateCommand('Show', $modelName, $commandPath);
-        $this->generateCommand('Update', $modelName, $commandPath);
-
-        $this->info('Controllers, Handlers, and DTO Commands created successfully!');
+        $this->info('Controllers, handlers, commands e Resoucesm criados com sucesso!');
     }
 
     /**
@@ -58,31 +63,43 @@ class CreateControllerHandler extends Command
      */
     protected function generateController(string $type, string $modelName, string $controllerPath)
     {
-        $stubPath = base_path("stubs/controller.stub");
+        if ($type === 'Index') {
+            $stubPath = base_path("stubs/controllers/index.stub");
+        } else {
+            $stubPath = base_path("stubs/controllers/others.stub");
+        }
+
         $filePath = "{$controllerPath}/{$type}Controller.php";
 
         $this->generateFile($stubPath, $filePath, [
             '{{ modelName }}' => $modelName,
             '{{ type }}' => $type,
         ]);
+
+        $this->info("Controller {$type} criado com sucesso em {$controllerPath}!");
     }
 
     /**
      * Generate a shared handler for all operations using a stub.
      */
-    protected function generateSharedHandler(string $modelName, string $handlerPath)
+    protected function generateHandler(string $type, string $modelName, string $handlerPath)
     {
-        $filePath = "{$handlerPath}/Handler.php";
+        if ($type === 'Index') {
+            $stubPath = base_path("stubs/index.stub");
+        } else {
+            $stubPath = base_path("stubs/others.stub");
+        }
+
+        $filePath = "{$handlerPath}/{$type}/Handler.php";
 
         if (!File::exists($filePath)) {
-            $stubPath = base_path("stubs/handler.stub");
             $this->generateFile($stubPath, $filePath, [
                 '{{ modelName }}' => $modelName,
             ]);
 
-            $this->info("Shared Handler created: {$filePath}");
+            $this->info("Handler {$type} criado com sucesso: {$filePath}");
         } else {
-            $this->info("Shared Handler already exists: {$filePath}");
+            $this->info("Handler {$type} já existe: {$filePath}");
         }
     }
 
@@ -92,7 +109,7 @@ class CreateControllerHandler extends Command
     protected function generateCommand(string $type, string $modelName, string $commandPath)
     {
         $stubPath = base_path("stubs/command.stub");
-        $filePath = "{$commandPath}/{$type}Command.php";
+        $filePath = "{$commandPath}/{$type}/Command.php";
 
         $this->generateFile($stubPath, $filePath, [
             '{{ modelName }}' => $modelName,
