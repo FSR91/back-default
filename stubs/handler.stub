@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Handlers\{{ modelName }};
+
+use App\Commands\{{ modelName }}\{{ type }}Command;
+
+class {{ type }}Handler
+{
+    public function handle({{ type }}Command $command)
+    {
+        // Lógica de manipulação do comando
+        
+        // Exemplo de retorno:
+        return response()->json([
+            'message' => 'Comando {{ type }} executado com sucesso.',
+        ]);
+    }
+}

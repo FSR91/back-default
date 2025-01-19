@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Commands\{{ modelName }}\ShowCommand;
+use App\Handlers\{{ modelName }}\ShowHandler;
+
+class Show{{ modelName }}Controller extends Controller
+{
+    protected $handler;
+
+    public function __construct(ShowHandler $handler)
+    {
+        $this->handler = $handler;
+    }
+
+    public function __invoke(int $id)
+    {
+        $command = new ShowCommand($id);
+
+        return $this->handler->handle($command);
+    }
+}

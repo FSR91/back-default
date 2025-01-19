@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Commands\{{ modelName }}\IndexCommand;
+use App\Handlers\{{ modelName }}\IndexHandler;
+
+class Index{{ modelName }}Controller extends Controller
+{
+    protected $handler;
+
+    public function __construct(IndexHandler $handler)
+    {
+        $this->handler = $handler;
+    }
+
+    public function __invoke()
+    {
+        $command = new IndexCommand();
+
+        return $this->handler->handle($command);
+    }
+}

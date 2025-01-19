@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Commands\{{ modelName }}\UpdateCommand;
+use App\Handlers\{{ modelName }}\UpdateHandler;
+use Illuminate\Http\Request;
+
+class Update{{ modelName }}Controller extends Controller
+{
+    protected $handler;
+
+    public function __construct(UpdateHandler $handler)
+    {
+        $this->handler = $handler;
+    }
+
+    public function __invoke(int $id, Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'status' => 'required',
+        ]);
+
+        $command = new UpdateCommand(
+            $id,
+            $request->title,
+            $request->description,
+            $request->status
+        );
+
+        return $this->handler->handle($command);
+    }
+}

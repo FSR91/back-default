@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Commands\{{ modelName }};
+
+class {{ type }}Command
+{
+    public string $exampleField1;
+    public ?string $exampleField2;
+    public array $exampleField3 = [];
+
+    public function __construct(array $data) {
+      $this->exampleField1 = data_get($data, 'exampleField1');
+      $this->exampleField2 = data_get($data, 'exampleField2');  
+      $this->exampleField3 = data_get($data, 'exampleField3', []);  
+    }
+}
