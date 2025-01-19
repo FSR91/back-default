@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Commands\{{ modelName }}\IndexCommand;
 use App\Handlers\{{ modelName }}\IndexHandler;
+use Illuminate\Http\Request;
 
 class Index{{ modelName }}Controller extends Controller
 {

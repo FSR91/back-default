@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Commands\{{ modelName }}\UpdateCommand;
 use App\Handlers\{{ modelName }}\UpdateHandler;
 use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 
 class Update{{ modelName }}Controller extends Controller
 {

@@ -45,8 +45,10 @@ class CreateControllerHandler extends Command
         $controllerPath = app_path("Http/Controllers/{$modelName}");
         $applicationPath = app_path("App/Application/{$modelName}");
 
-        Artisan::call('make:resource', ['name' => "{$applicationPath}/{$modelName}Resource"]);
-        Artisan::call('make:resource', ['name' => "{$applicationPath}/{$modelName}Collection"]);
+        Artisan::call('make:resource', ['name' => "{$modelName}/{$modelName}Resource"]);
+        $this->info("{$modelName}Resource criado em app\Http\Resources/{$modelName}Resource");
+        Artisan::call('make:resource', ['name' => "{$modelName}/{$modelName}Collection"]);
+        $this->info("{$modelName}Collection criado em app\Http\Resources/{$modelName}Collection");
 
         // Generate Controllers
         foreach ($verbs as $verb) {
@@ -55,7 +57,7 @@ class CreateControllerHandler extends Command
             $this->generateController($verb, $modelName, $controllerPath);
         }
 
-        $this->info('Controllers, handlers, commands e Resoucesm criados com sucesso!');
+        $this->info('Controllers, Handlers, Commands e Resouces criados com sucesso!');
     }
 
     /**
@@ -85,9 +87,9 @@ class CreateControllerHandler extends Command
     protected function generateHandler(string $type, string $modelName, string $handlerPath)
     {
         if ($type === 'Index') {
-            $stubPath = base_path("stubs/index.stub");
+            $stubPath = base_path("stubs/handlers/index.stub");
         } else {
-            $stubPath = base_path("stubs/others.stub");
+            $stubPath = base_path("stubs/handlers/others.stub");
         }
 
         $filePath = "{$handlerPath}/{$type}/Handler.php";
@@ -108,7 +110,11 @@ class CreateControllerHandler extends Command
      */
     protected function generateCommand(string $type, string $modelName, string $commandPath)
     {
-        $stubPath = base_path("stubs/command.stub");
+        if ($type === 'Index') {
+            $stubPath = base_path("stubs/commands/index.stub");
+        } else {
+            $stubPath = base_path("stubs/commands/others.stub");
+        }
         $filePath = "{$commandPath}/{$type}/Command.php";
 
         $this->generateFile($stubPath, $filePath, [
