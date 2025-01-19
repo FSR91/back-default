@@ -16,7 +16,7 @@ class ModelWithMigrationFilterAndRepository extends Command
      *
      * @var string
      */
-    protected $signature = 'app:model';
+    protected $signature = 'app:model {modelName?}';
 
     /**
      * The console command description.
@@ -30,7 +30,7 @@ class ModelWithMigrationFilterAndRepository extends Command
      */
     public function handle()
     {
-        $modelName = text(
+        $modelName = $this->argument('modelName') ?? text(
             label: 'Nome do Model:',
             required: true,
         );
