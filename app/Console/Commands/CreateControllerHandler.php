@@ -51,7 +51,7 @@ class CreateControllerHandler extends Command
         // Generate Controllers
         foreach ($verbs as $verb) {
             $this->generateHandler($verb, $modelName, $applicationPath);
-            $this->generateCommand($verb, $modelName, $commandPath);
+            $this->generateCommand($verb, $modelName, $applicationPath);
             $this->generateController($verb, $modelName, $controllerPath);
         }
 
