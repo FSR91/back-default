@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Core\Infra\Eloquent\Helper;
+namespace App\Infra\Eloquent\Helper;
 
 use Illuminate\Support\Str;
 

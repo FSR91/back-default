@@ -44,8 +44,8 @@ class ModelWithMigrationFilterAndRepository extends Command
 
         $filterName = "{$modelName}Filter";
 
-        $repositoryIterfaceName = "{$modelName}RepositoryInterface";
-        $repositoryName = "{$modelName}Repository";
+        $this->generateInterfaceRepository($modelName);
+        $this->generateRepository($modelName);
     }
 
 
@@ -80,5 +80,70 @@ class ModelWithMigrationFilterAndRepository extends Command
         File::put($modelPath, $content);
 
         $this->info("Model {$modelName} criado com sucesso em {$modelPath}.");
+    }
+
+    protected function generateInterfaceRepository(string $modelName)
+    {
+
+        // Caminho do stub
+        $stubPath = base_path('stubs\repositoryInterface.stub');
+        $interfacePath = app_path("Contracts/{$modelName}RepositoryInterface.php");        
+
+
+        if (!File::exists($stubPath)) {
+            $this->error("O stub do model não foi encontrado em {$stubPath}.");
+            return;
+        }
+
+        // Ler o conteúdo do stub        
+        $stubContent = File::get($stubPath);
+
+        // Substituir placeholders no stub
+        $content = str_replace(
+            ['{{ modelName }}'],
+            [$modelName],
+            $stubContent
+        );
+
+        // Criar diretório, se necessário
+        File::ensureDirectoryExists(dirname($interfacePath));
+
+        // Salvar o arquivo do model
+        File::put($interfacePath, $content);
+
+        $this->info("Interface do model {$modelName} criado com sucesso em {$interfacePath}.");
+    }
+
+    protected function generateRepository(string $modelName)
+    {
+
+        // Caminho do stub
+        $stubPath = base_path('stubs\repository.stub');
+        $repositoryPath = app_path("Infra\Eloquent/{$modelName}Repository.php");
+        $modelInstance = Str::camel($modelName);
+
+
+        if (!File::exists($stubPath)) {
+            $this->error("O stub do model não foi encontrado em {$stubPath}.");
+            return;
+        }
+
+        // Ler o conteúdo do stub        
+        $stubContent = File::get($stubPath);
+
+        // Substituir placeholders no stub
+        $content = str_replace(
+            ['{{ modelName }}', '{{ modelInstance }}'],
+            [$modelName, $modelInstance],
+            $stubContent
+        );
+
+        // Criar diretório, se necessário
+        File::ensureDirectoryExists(dirname($repositoryPath));
+
+        // Salvar o arquivo do model
+        File::put($repositoryPath, $content);
+
+        $this->info("Repository do model {$modelName} criado com sucesso em {$repositoryPath}.");
     }
 }

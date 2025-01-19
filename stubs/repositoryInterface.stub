@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Contracts;
+
+use App\Models\{{ modelName }};
+use Illuminate\Pagination\LengthAwarePaginator;
+
+interface {{ modelName }}RepositoryContract
+{
+
+    /**
+     * @param {{ modelName }} ${{ modelName }}
+     * @return {{ modelName }}
+     */
+    public function save({{ modelName }} ${{ modelName }}): {{ modelName }};
+
+    /**
+     * @param array $filter
+     * @param array|string $sort
+     * @param int $page
+     * @param int $perPage
+     * @return LengthAwarePaginator
+     */
+
+    public function index(array $filter, $sort, int $page = 1, int $perPage = 10): LengthAwarePaginator;
+
+    /**
+     *
+     * @param array $filter
+     * @return {{ modelName }}|null
+     */
+    public function getOne(array $filter): ?{{ modelName }};
+
+    /**
+     *
+     * @param {{ modelName }} ${{ modelName }}
+     * @return boolean
+     */
+    public function destroy({{ modelName }} ${{ modelName }}): bool;
+
+    /**
+     *
+     * @param array $filter
+     * @return array
+     */
+    public function summary(array $filter): array;
+}
