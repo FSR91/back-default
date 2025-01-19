@@ -4,10 +4,10 @@ namespace App\Console\Commands;
 
 use File;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Str;
 
 use function Laravel\Prompts\text;
-
 
 class ModelWithMigrationFilterAndRepository extends Command
 {
@@ -31,7 +31,7 @@ class ModelWithMigrationFilterAndRepository extends Command
     public function handle()
     {
         $modelName = text(
-            label: 'Model name',
+            label: 'Nome do Model:',
             required: true,
         );
 
@@ -40,7 +40,8 @@ class ModelWithMigrationFilterAndRepository extends Command
         $migrationName = "create_" . Str::snake(Str::plural($modelName)) . "_table";
 
         $this->generateModel($modelName, $modelPath);
-        $this->call('make:migration', ['name' => $migrationName]);
+        // $this->call('make:migration', ['name' => $migrationName]);
+        $this->generateMigration($migrationName);
         $this->generateFilter($modelName);
         $this->generateInterfaceRepository($modelName);
         $this->generateRepository($modelName);
@@ -109,7 +110,7 @@ class ModelWithMigrationFilterAndRepository extends Command
         // Salvar o arquivo do model
         File::put($interfacePath, $content);
 
-        $this->info("Interface do model {$modelName} criado com sucesso em {$interfacePath}.");
+        $this->info("Interface do Model {$modelName} criado com sucesso em {$interfacePath}.");
     }
 
     protected function generateRepository(string $modelName)
@@ -142,7 +143,7 @@ class ModelWithMigrationFilterAndRepository extends Command
         // Salvar o arquivo do model
         File::put($repositoryPath, $content);
 
-        $this->info("Repository do model {$modelName} criado com sucesso em {$repositoryPath}.");
+        $this->info("Repository do Model {$modelName} criado com sucesso em {$repositoryPath}.");
     }
 
 
@@ -177,5 +178,33 @@ class ModelWithMigrationFilterAndRepository extends Command
         File::put($filterPath, $content);
 
         $this->info("Filter do model {$modelName} criado com sucesso em {$filterPath}.");
+    }
+
+    protected function generateMigration(string $migrationName)
+    {
+        // Caminho base para as migrations
+        $migrationsPath = database_path('migrations');
+
+        // Lista os arquivos antes de criar a migration
+        $beforeFiles = File::allFiles($migrationsPath);
+
+        // Executa o comando sem mostrar a saída
+        Artisan::call('make:migration', ['name' => $migrationName]);
+
+        // Lista os arquivos depois de criar a migration
+        $afterFiles = File::allFiles($migrationsPath);
+
+        // Identifica o novo arquivo gerado
+        $newFiles = array_diff(
+            array_map('strval', $afterFiles),
+            array_map('strval', $beforeFiles)
+        );
+
+        if (!empty($newFiles)) {
+            $newMigrationPath = reset($newFiles);
+            $this->info("Migration criada: $newMigrationPath");
+        } else {
+            $this->info("Nenhuma nova migration foi criada.");
+        }
     }
 }
